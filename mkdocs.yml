@@ -1,3 +1,4 @@
 site_name: Homelab Documentation
+site_url: https://x-real-ip.github.io/documentation
 theme:
   name: material
