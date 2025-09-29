@@ -1,4 +1,19 @@
 site_name: Homelab Documentation
 site_url: https://x-real-ip.github.io/documentation
+nav:
+  - Home: index.md
+  - Network: network.md
+  - Ansible Playbooks: ansible-playbooks.md
 theme:
   name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
