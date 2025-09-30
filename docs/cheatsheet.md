@@ -234,3 +234,17 @@ Copy to or from pod
 ```console
 kubectl cp <namespace>/<pod>:/tmp/foo /tmp/bar
 ```
+
+## ArgoCD WebUI
+
+```bash
+argocd admin dashboard -n argocd
+```
+
+## Uptime Kuma
+
+A sqlite query to find and replace a part in the monitor url.
+
+```
+UPDATE monitor SET url = REPLACE(url, 'old', 'new') WHERE url LIKE '%old%';
+```
