@@ -3,8 +3,13 @@ site_url: https://x-real-ip.github.io/documentation
 nav:
   - Home: index.md
   - Network: network.md
-  - Hypervisor: hypervisor.md
-  - Ansible Playbooks: ansible-playbooks.md
+  - First Install:
+      - desktop.md
+      - hypervisor.md
+      - kubernetes.md
+      - odroid.md
+  - Infrastructure as Code: infrastructure-as-code.md
+  - Cheatsheet: cheatsheet.md
 theme:
   name: material
   features:
@@ -29,5 +34,9 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.superfences
   - tables
+  - admonition
   - pymdownx.tabbed:
       alternate_style: true
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
