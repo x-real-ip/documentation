@@ -5,7 +5,7 @@
 
 | VLAN | Description |
 | ---- | ----------- |
-| 300  | wan         |
+| 6    | wan         |
 | 10   | private     |
 | 20   | guest       |
 | 30   | iot         |
@@ -31,8 +31,8 @@
 | tv-01                  | 12         | 12          | 30            |                         | 30   |
 | wallpatch-livingroom   | 13         | 13          | 100           |                         | 100  |
 | inverter               | 14         | 14          | 30            |                         | 30   |
-| pve-a - WAN-A          | -          | 15          |               | 300                     | 300  |
-| pve-b - WAN-B          | -          | 16          |               | 300                     | 300  |
+| pve-a - WAN-A          | -          | 15          |               | 6                       | 6    |
+| pve-b - WAN-B          | -          | 16          |               | 6                       | 6    |
 | opnsense pve-a - LAN-A | -          | 17          | 99            | 10, 20, 30, 40, 99, 100 | 99   |
 | opnsense pve-b - LAN-B | -          | 18          | 99            | 10, 20, 30, 40, 99, 100 | 99   |
 | pve-a - management (C) | -          | 19          | 99            |                         | 99   |
