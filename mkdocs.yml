@@ -3,9 +3,12 @@ site_url: https://x-real-ip.github.io/documentation
 nav:
   - Home: index.md
   - Network: network.md
+  - Hypervisor: hypervisor.md
   - Ansible Playbooks: ansible-playbooks.md
 theme:
   name: material
+  features:
+    - content.code.copy
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -17,3 +20,14 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - tables
+  - pymdownx.tabbed:
+      alternate_style: true
