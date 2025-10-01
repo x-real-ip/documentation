@@ -1,8 +1,6 @@
 # Welcome to my Homelab documentation
 
-Homelab Documentation
-
-Welcome to my homelab documentation! This repository is where I track my infrastructure setup, experiments, and automation projects. My lab runs primarily on a Proxmox cluster with TrueNAS SCALE for storage and Kubernetes (k3s) for running services. I use Ansible to automate deployments and manage various operational tasks. Additionally, I follow a GitOps approach for Kubernetes using a [dedicated repository](https://github.com/x-real-ip/gitops) with ArgoCD to declaratively manage my services and configurations.
+This documentation is where I track my infrastructure setup, how-to's, cheatsheet, experiments and automation projects. My lab runs primarily on a Proxmox cluster with TrueNAS SCALE for storage and Kubernetes (k3s) for running services. I use Ansible to automate deployments and manage various operational tasks. Additionally, I follow a GitOps approach for Kubernetes using a [dedicated repository](https://github.com/x-real-ip/gitops) with ArgoCD to declaratively manage my services and configurations.
 
 The goals of this documentation are twofold:
 
