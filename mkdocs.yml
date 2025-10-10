@@ -10,6 +10,7 @@ nav:
       - odroid.md
   - Infrastructure as Code: infrastructure-as-code.md
   - Cheatsheet: cheatsheet.md
+  - Backup: backup.md
 theme:
   name: material
   features:

@@ -13,5 +13,5 @@ Here, you’ll find notes, guides, and code snippets covering virtualization, st
 ## Serve docs locally
 
 ```
-podman run --rm -it -v ${PWD}:/docs -p 8000:8000 squidfunk/mkdocs-material serve -a 0.0.0.0:8000
+podman run --rm -it -v ${PWD}:/docs -p 8000:8000 docker.io/squidfunk/mkdocs-material serve -a 0.0.0.0:8000
 ```
