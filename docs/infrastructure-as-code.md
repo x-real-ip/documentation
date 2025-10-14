@@ -48,17 +48,23 @@
 
 Navigate to the `ansible` directory where the [infrastructure](https://github.com/x-real-ip/infrastructure.git) repository is cloned.
 
-| Playbook                             | Command                                                                                   | Comment                                                                      |
-| ------------------------------------ | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| non-root-user                        | `ansible-playbook -k --ask-vault-password playbooks/non-root-user.yaml`                     | Add a non root user                                                          |
-| desktop                              | `ansible-playbook -K --ask-vault-password playbooks/desktop.yaml`                           | Set the Debian desktop desired state                                         |
-| truenas-shares                       | `ansible-playbook playbooks/truenas_shares.yaml`                                            | Configure all NFS and ISCSI shares on the truenas hosts                      |
-| truenas_switch-master                | `ansible-playbook --ask-vault-password playbooks/truenas_switch-master.yaml`                | Switch the master from A to B or the otherway around  |
-| truenas_snapshot-tasks               | `ansible-playbook --ask-vault-password playbooks/truenas_snapshot-tasks.yaml`               | Apply desired snapshots tasks to the truenas server |
-| shelly_update-firmware               | `ansible-playbook playbooks/shelly_update-firmware.yaml`                                    | Update and set desired state of all Shelly devices |
-| k3s_rolling-update-nodes             | `ansible-playbook --ask-vault-password playbooks/k3s_rolling-update-nodes.yaml`             | Update the os packages on all k3s nodes                                      |
-| k3s_install_cluster_bare          | `ansible-playbook --ask-vault-password playbooks/k3s_install_cluster_bare.yaml`             | Install or update k3s on all nodes without installing additional deployments |
-| k3s_install_cluster_minimal          | `ansible-playbook --ask-vault-password playbooks/k3s_install_cluster_minimal.yaml`          | Install or update k3s on all nodes including additional deployments          |
-| k3s_remove-apps-with-truenas-storage | `ansible-playbook --ask-vault-password playbooks/k3s_remove-apps-with-truenas-storage.yaml` | Delete all k8s resources that has storage=truenas label |
+| Playbook | Command | Comment |
+| ------------------ | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| desktop | `ansible-playbook -K --ask-vault-password playbooks/desktop.yaml` | Set the Debian desktop desired state |
 | k3s_apply-apps-with-truenas-storage  | `ansible-playbook --ask-vault-password playbooks/k3s_apply-apps-with-truenas-storage.yaml`  | Apply all k8s resources that has storage=truenas label |
-| k3s_stop_all_pods                    | `ansible-playbook playbooks/k3s_stop_all_pods.yaml`                                         | Cordon and drain nodes                                                       |
+| k3s_install_cluster_bare | `ansible-playbook --ask-vault-password playbooks/k3s_install_cluster_bare.yaml` | Install or update k3s on all nodes without installing additional deployments |
+| k3s_install_cluster_minimal | `ansible-playbook --ask-vault-password playbooks/k3s_install_cluster_minimal.yaml` | Install or update k3s on all nodes including additional deployments |
+| k3s_remove-apps-with-truenas-storage | `ansible-playbook --ask-vault-password playbooks/k3s_remove-apps-with-truenas-storage.yaml` | Delete all k8s resources that has storage=truenas label |
+| k3s_render_yaml | `ansible-playbook --ask-vault-password playbooks/k3s_render_yaml.yaml` | Ouput all kubernetes k8s yamls from jinja2 |
+| k3s_rolling-update-nodes | `ansible-playbook --ask-vault-password playbooks/k3s_rolling-update-nodes.yaml` | Update the os packages on all k3s nodes |
+| k3s_start_all_pods | `ansible-playbook playbooks/k3s_start_all_pods.yaml` | Uncordon nodes |
+| k3s_stop_all_pods | `ansible-playbook playbooks/k3s_stop_all_pods.yaml` | Cordon and drain nodes |
+| known_hosts | `ansible-playbook playbooks/known_hosts.yaml` | Add devices to the local known_hosts file |
+| local_self-signed-certificate_generate | `ansible-playbook playbooks/local_self-signed-certificate_generate.yaml` | Generate a self-signed certificate |
+| non-root-user | `ansible-playbook -k --ask-vault-password playbooks/non-root-user.yaml` | Add a non root user |
+| proxmox_migrate-vms-to-master | `ansible-playbook playbooks/proxmox_migrate-vms-to-master.yaml` | Migrate all possible VM's to the Proxmox node that is marked as master |
+| proxmox_wake-up-standby-node | `ansible-playbook playbooks/proxmox_wake-up-standby-node.yaml` | Send a magic packet to wakeup the standby (not master) Proxmox node |
+| shelly_update-firmware | `ansible-playbook playbooks/shelly_update-firmware.yaml` | Update and set desired state of all Shelly devices |
+| truenas_shares | `ansible-playbook playbooks/truenas_shares.yaml` | Configure all NFS and ISCSI shares on the truenas hosts |
+| truenas_switch-master | `ansible-playbook --ask-vault-password playbooks/truenas_switch-master.yaml` | Switch the master from A to B or the otherway around |
+| truenas_snapshot-tasks | `ansible-playbook --ask-vault-password playbooks/truenas_snapshot-tasks.yaml` | Apply desired snapshots tasks to the truenas server |

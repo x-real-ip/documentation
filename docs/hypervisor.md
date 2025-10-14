@@ -54,7 +54,9 @@ Enter the following values during setup.
         auto lo
         iface lo inet loopback
 
+        auto enp0s31f6
         iface enp0s31f6 inet manual
+            up /sbin/ethtool -s enp0s31f6 wol g
         #Onboard
 
         iface enp4s0f0 inet manual
@@ -101,7 +103,9 @@ Enter the following values during setup.
         auto lo
         iface lo inet loopback
 
+        auto eno1
         iface eno1 inet manual
+            up /sbin/ethtool -s eno1 wol g
         #Onboard
 
         iface enp3s0f0 inet manual
