@@ -64,7 +64,7 @@ Navigate to the `ansible` directory where the [infrastructure](https://github.co
 | non-root-user | `ansible-playbook -k --ask-vault-password playbooks/non-root-user.yaml` | Add a non root user |
 | proxmox_migrate-vms-to-master | `ansible-playbook playbooks/proxmox_migrate-vms-to-master.yaml` | Migrate all possible VM's to the Proxmox node that is marked as master |
 | proxmox_wake-up-standby-node | `ansible-playbook playbooks/proxmox_wake-up-standby-node.yaml` | Send a magic packet to wakeup the standby (not master) Proxmox node |
-| shelly_update-firmware | `ansible-playbook playbooks/shelly_update-firmware.yaml` | Update and set desired state of all Shelly devices |
+| shelly_update-firmware | `ansible-playbook --ask-vault-password playbooks/shelly_update-firmware.yaml` | Toggle allow internet firewall rule for NOT VLAN, update and set desired state of all Shelly devices |
 | truenas_shares | `ansible-playbook playbooks/truenas_shares.yaml` | Configure all NFS and ISCSI shares on the truenas hosts |
 | truenas_switch-master | `ansible-playbook --ask-vault-password playbooks/truenas_switch-master.yaml` | Switch the master from A to B or the otherway around |
 | truenas_snapshot-tasks | `ansible-playbook --ask-vault-password playbooks/truenas_snapshot-tasks.yaml` | Apply desired snapshots tasks to the truenas server |
