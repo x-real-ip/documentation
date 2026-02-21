@@ -8,7 +8,7 @@ Enter the following values during setup.
 
 ## Disks and partitioning
 
-1. Remove lve-local via the proxmox UI.
+1. Remove local-lvm via the proxmox UI.
 2. Remove the data partition.
 
    ```sh
@@ -51,50 +51,49 @@ Enter the following values during setup.
     === "pve-a"
 
          ```
-         auto lo
-         iface lo inet loopback
+        auto lo
+        iface lo inet loopback
 
-         auto enp0s31f6
-         iface enp0s31f6 inet manual
-             up /sbin/ethtool -s enp0s31f6 wol g
-         #Onboard
+        auto nic0
+        iface nic0 inet manual
+            up /sbin/ethtool -s nic0 wol g
+        #Onboard
 
-         iface enp4s0f0 inet manual
-         #PCI
+        iface nic1 inet manual
+        #PCI
 
-         iface enp4s0f1 inet manual
-             pre-up ethtool -G $IFACE rx 4096 tx 4096
-             pre-up ethtool -C $IFACE rx-usecs 0
-         #PCI
+        iface nic2 inet manual
+        #PCI
 
-         auto vmbr0
-         iface vmbr0 inet static
-             address 10.0.99.2/24
-             gateway 10.0.99.1
-             bridge-ports enp0s31f6
-             bridge-stp off
-             bridge-fd 0
-         #mgmt
+        auto vmbr0
+        iface vmbr0 inet static
+                address 10.0.99.2/24
+                gateway 10.0.99.1
+                bridge-ports nic0
+                bridge-stp off
+                bridge-fd 0
+        #mgmt
 
-         auto vmbr1
-         iface vmbr1 inet manual
-             bridge-ports enp4s0f0
-             bridge-stp off
-             bridge-fd 0
-             bridge-vlan-aware yes
-             bridge-vids 2-4094
-         #wan
+        auto vmbr1
+        iface vmbr1 inet manual
+                bridge-ports nic1
+                bridge-stp off
+                bridge-fd 0
+                bridge-vlan-aware yes
+                bridge-vids 2-4094
+        #wan
 
-         auto vmbr2
-         iface vmbr2 inet manual
-             bridge-ports enp4s0f1
-             bridge-stp off
-             bridge-fd 0
-             bridge-vlan-aware yes
-             bridge-vids 2-4094
-         #lan
+        auto vmbr2
+        iface vmbr2 inet manual
+                bridge-ports nic2
+                bridge-stp off
+                bridge-fd 0
+                bridge-vlan-aware yes
+                bridge-vids 2-4094
+        #lan
 
-         source /etc/network/interfaces.d/*
+
+        source /etc/network/interfaces.d/*
          ```
 
     === "pve-b"
@@ -116,29 +115,29 @@ Enter the following values during setup.
 
          auto vmbr0
          iface vmbr0 inet static
-             address 10.0.99.3/24
-             gateway 10.0.99.1
-             bridge-ports nic0
-             bridge-stp off
-             bridge-fd 0
+                address 10.0.99.3/24
+                gateway 10.0.99.1
+                bridge-ports nic0
+                bridge-stp off
+                bridge-fd 0
          #mgmt
 
          auto vmbr1
          iface vmbr1 inet manual
-             bridge-ports nic1
-             bridge-stp off
-             bridge-fd 0
-             bridge-vlan-aware yes
-             bridge-vids 2-4094
+                bridge-ports nic1
+                bridge-stp off
+                bridge-fd 0
+                bridge-vlan-aware yes
+                bridge-vids 2-4094
          #wan
 
          auto vmbr2
          iface vmbr2 inet manual
-             bridge-ports nic2
-             bridge-stp off
-             bridge-fd 0
-             bridge-vlan-aware yes
-             bridge-vids 2-4094
+                bridge-ports nic2
+                bridge-stp off
+                bridge-fd 0
+                bridge-vlan-aware yes
+                bridge-vids 2-4094
          #lan
 
          source /etc/network/interfaces.d/*
