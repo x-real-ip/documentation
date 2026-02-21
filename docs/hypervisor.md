@@ -151,27 +151,27 @@ Enter the following values during setup.
 
 ## Import ZFS pool
 
-1. List zfs pools and check if vm-storage pool exist.
+1.  List zfs pools and check if vm-storage pool exist.
 
-   ```sh
-   zpool import
-   ```
+    ```sh
+    zpool import
+    ```
 
-2. Import zfs pool
+2.  Import zfs pool
 
-   ```sh
-   zpool import -f vm-storage
-   ```
+    ```sh
+    zpool import -f vm-storage
+    ```
 
-3. Reboot
+3.  Reboot
 
-   ```sh
-   reboot now
-   ```
+    ```sh
+    reboot now
+    ```
 
-4. Add pool to the UI.  
-   Go to `Datacenter` -> `Storage` -> `Add` -> `ZFS` -> Select `vm-storage` and
-   enter id `vm-storage`
+4.  Add pool to the UI.  
+    Go to `Datacenter` -> `Storage` -> `Add` -> `ZFS` -> Select `vm-storage` and
+    enter id `vm-storage`
 
 ## Post install scripts
 
