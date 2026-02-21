@@ -254,9 +254,9 @@ The scripts can be found at <https://community-scripts.github.io/ProxmoxVE/>
 3.  Add the QDevice to the cluster. Run this on one of the Proxmox nodes. Change
     the IP address to the IP of the Qdevice
 
-        ``` sh
-        pvecm qdevice setup 10.0.99.102 -f
-        ```
+    ``` sh
+    pvecm qdevice setup 10.0.99.102 -f
+    ```
 
 4.  Once this is completed check if the Qdevice has been added to the cluster.
 
@@ -306,19 +306,17 @@ The scripts can be found at <https://community-scripts.github.io/ProxmoxVE/>
 
 ### Mount USB stick (backups)
 
-1. Find the USB stick device
+1.  Find the USB stick device
+    ```bash
+    lsblk
+    ```
 
-   ```bash
-   lsblk
-   ```
+2.  Create mount directory
+    ```bash
+    mkdir -p /mnt/pve/backup_usb-stick
+    ```
 
-2. Create mount directory
-
-   ```bash
-   mkdir -p /mnt/pve/backup_usb-stick
-   ```
-
-3. Mount (change `<sd?>` to the correct device)
-   ```bash
-   mount /dev/<sd?> /mnt/pve/backup_usb-stick
-   ```
+3.  Mount (change `<sd?>` to the correct device)
+    ```bash
+    mount /dev/<sd?> /mnt/pve/backup_usb-stick
+    ```
