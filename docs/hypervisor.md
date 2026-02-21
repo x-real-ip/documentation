@@ -193,9 +193,9 @@ The scripts can be found at <https://community-scripts.github.io/ProxmoxVE/>
 1.  This command sets the root password, enables root login in the SSH
     configuration, and restarts the SSH service.
 
-        ```bash
-        sudo passwd root && sudo sed -i 's/#PermitRootLogin/PermitRootLogin yes/' /etc/ssh/sshd_config && sudo systemctl restart sshd
-        ```
+    ```bash
+    sudo passwd root && sudo sed -i 's/#PermitRootLogin/PermitRootLogin yes/' /etc/ssh/sshd_config && sudo systemctl restart sshd
+    ```
 
 2.  Install corosync packages
 
