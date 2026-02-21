@@ -115,29 +115,29 @@ Enter the following values during setup.
 
         auto vmbr0
         iface vmbr0 inet static
-            address 10.0.99.3/24
-            gateway 10.0.99.1
-            bridge-ports nic0
-            bridge-stp off
-            bridge-fd 0
+                address 10.0.99.3/24
+                gateway 10.0.99.1
+                bridge-ports nic0
+                bridge-stp off
+                bridge-fd 0
         #mgmt
 
         auto vmbr1
         iface vmbr1 inet manual
-            bridge-ports nic1
-            bridge-stp off
-            bridge-fd 0
-            bridge-vlan-aware yes
-            bridge-vids 2-4094
+                bridge-ports nic1
+                bridge-stp off
+                bridge-fd 0
+                bridge-vlan-aware yes
+                bridge-vids 2-4094
         #wan
 
         auto vmbr2
         iface vmbr2 inet manual
-            bridge-ports nic2
-            bridge-stp off
-            bridge-fd 0
-            bridge-vlan-aware yes
-            bridge-vids 2-4094
+                bridge-ports nic2
+                bridge-stp off
+                bridge-fd 0
+                bridge-vlan-aware yes
+                bridge-vids 2-4094
         #lan
 
         source /etc/network/interfaces.d/*
