@@ -194,13 +194,13 @@ The scripts can be found at <https://community-scripts.github.io/ProxmoxVE/>
     configuration, and restarts the SSH service.
 
     ```bash
-    sudo passwd root && sudo sed -i 's/#PermitRootLogin/PermitRootLogin yes/' /etc/ssh/sshd_config && sudo systemctl restart sshd
+    passwd root && sed -i 's/#PermitRootLogin/PermitRootLogin yes/' /etc/ssh/sshd_config && systemctl restart sshd
     ```
 
 2.  Install corosync packages
 
     ```bash
-    sudo apt install corosync-qnetd corosync-qdevice
+    apt install corosync-qnetd corosync-qdevice
     ```
 
 #### On the Proxmox node(s)
