@@ -50,7 +50,7 @@ Navigate to the `ansible` directory where the [infrastructure](https://github.co
 
 | Playbook | Command | Comment |
 | ------------------ | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| desktop | `ansible-playbook -K --ask-vault-password playbooks/desktop.yaml` | Set the Debian desktop desired state |
+| desktop | `ANSIBLE_CONFIG=./ansible.cfg ansible-playbook -K --ask-vault-password playbooks/desktop.yaml` | Set the Debian desktop desired state |
 | k3s_apply-apps-with-truenas-storage  | `ansible-playbook --ask-vault-password playbooks/k3s_apply-apps-with-truenas-storage.yaml`  | Apply all k8s resources that has storage=truenas label |
 | k3s_install_cluster_bare | `ansible-playbook --ask-vault-password playbooks/k3s_install_cluster_bare.yaml` | Install or update k3s on all nodes without installing additional deployments |
 | k3s_install_cluster_minimal | `ansible-playbook --ask-vault-password playbooks/k3s_install_cluster_minimal.yaml` | Install or update k3s on all nodes including additional deployments |
