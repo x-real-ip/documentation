@@ -137,7 +137,14 @@ echo -n foo | kubeseal --raw --from-file=/dev/stdin --namespace bar --name mysec
 AgBChHUWLMx...
 ```
 
-Without a local cert file, fetch it live from the in-cluster controller (useful when patching just one key of an existing `SealedSecret`, e.g. via a kustomize JSON6902 patch on `encryptedData.<KEY>`). In this cluster the controller service is named `sealed-secrets` in `kube-system`, not the kubeseal default `sealed-secrets-controller`, so the name/namespace flags are required:
+With the custom cert (useful when patching just one key of an existing `SealedSecret`, e.g. via a kustomize JSON6902 patch on `encryptedData.<KEY>`):
+
+```console
+echo -n foo | kubeseal --cert ./sealed-secret-tls-2.crt --raw --from-file=/dev/stdin --namespace bar --name mysecret
+AgBChHUWLMx...
+```
+
+Without a local cert file, fetch it live from the in-cluster controller instead. In this cluster the controller service is named `sealed-secrets` in `kube-system`, not the kubeseal default `sealed-secrets-controller`, so the name/namespace flags are required:
 
 ```console
 echo -n foo | kubeseal --raw \
