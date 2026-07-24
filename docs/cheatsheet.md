@@ -168,6 +168,8 @@ echo -n foo | kubeseal --cert ./sealed-secret-tls-2.crt --raw --from-file=/dev/s
 AgAjLKpIYV+...
 ```
 
+No `--namespace`/`--name` needed here — the ciphertext isn't bound to a specific namespace+name. But this only decrypts if the target `SealedSecret` actually carries the `sealedsecrets.bitnami.com/cluster-wide: "true"` annotation (see below); without it the controller expects `strict`-scope ciphertext and unsealing fails. Since cluster-wide ciphertext isn't bound to one Secret, avoid it for per-app values like a db password — stick to `strict` there.
+
 Include the `sealedsecrets.bitnami.com/namespace-wide` annotation in the `SealedSecret`
 
 ```yaml
