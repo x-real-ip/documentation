@@ -5,7 +5,7 @@
 
 | VLAN | Description |
 | ---- | ----------- |
-| 6    | wan         |
+| 300  | wan         |
 | 10   | private     |
 | 20   | guest       |
 | 30   | iot         |
@@ -18,7 +18,7 @@
 
 | Device                 | Patch Port | Switch Port | VLAN Untagged | VLAN Tagged                 | PVID |
 | ---------------------- | ---------- | ----------- | ------------- | --------------------------- | ---- |
-| WAN NTU                | 4          | 1           |               | 6                           | 6    |
+| wan ntu                | 4          | 1           |               | 300                         | 300  |
 | wallpatch-basement     | 10         | 2           | 99            |                             | 99   |
 | wallpatch-livingroom   | 8          | 3           | 99            | 10, 20, 30, 40, 50          | 99   |
 | tado                   | -          | 4           | 30            |                             | 30   |
@@ -27,7 +27,7 @@
 | ap-upstairs            | 7          | 7           | 99            | 10, 20, 30, 40, 50          | 99   |
 | ap-downstairs          | 18         | 8           | 99            | 10, 20, 30, 40, 50          | 99   |
 | shield                 | 9          | 9           | 30            |                             | 30   |
-|                        |            | 10          | 100           |                             | 100  |
+| smart energie meter    | 20         | 10          | 100           |                             | 100  |
 | k3s-wkr-02             | 17         | 11          | 99            |                             | 99   |
 | tv-01                  | 12         | 12          | 30            |                             | 30   |
 | wallpatch-livingroom   | 13         | 13          | 100           |                             | 100  |
@@ -38,7 +38,7 @@
 | opnsense pve-b - LAN-B | -          | 18          | 99            | 10, 20, 30, 40, 50, 99, 100 | 99   |
 | pve-a - management (C) | -          | 19          | 99            |                             | 99   |
 | pve-b - management (D) | -          | 20          | 99            |                             | 99   |
-|                        | 19         | 21          | 99            |                             | 99   |
+| zendure solarflow      | 21         | 21          | 30            |                             | 30   |
 |                        |            | 22          | 99            |                             | 99   |
 |                        |            | 23          | 100           |                             | 100  |
 |                        |            | 24          | 100           |                             | 100  |
