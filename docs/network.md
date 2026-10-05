@@ -27,7 +27,7 @@
 | ap-upstairs            | 7          | 7           | 99            | 10, 20, 30, 40, 50          | 99   |
 | ap-downstairs          | 18         | 8           | 99            | 10, 20, 30, 40, 50          | 99   |
 | shield                 | 9          | 9           | 30            |                             | 30   |
-| smart energie meter    | 20         | 10          | 100           |                             | 100  |
+| smart energie meter    | 20         | 10          | 40           |                             | 100  |
 | k3s-wkr-02             | 17         | 11          | 99            |                             | 99   |
 | tv-01                  | 12         | 12          | 30            |                             | 30   |
 | wallpatch-livingroom   | 13         | 13          | 100           |                             | 100  |
