@@ -116,28 +116,118 @@ ssh root@10.0.99.2 'pveum user add tofu@pve --comment "OpenTofu" \
     the cluster: a joining node replaces its `/etc/pve` with the one from the
     cluster.
 
-### 5. Apply OpenTofu
+### 5. Create the node certificates
 
-Run this from the `opentofu/stacks/proxmox` directory of the infrastructure
-repository.
+The web interface and API of every node use a certificate from the stamx CA.
+Skip this step when `~/certs/proxmox` on the desktop already holds valid
+certificates.
 
-```sh
-export TF_VAR_state_passphrase='...'
-export PROXMOX_VE_API_TOKEN='tofu@pve!provider=...'
+!!! note "Run this on the desktop, not on a node"
 
-tofu init
-tofu plan
-tofu apply
-```
+    The CA private key must never leave the desktop. OpenTofu reads the
+    certificates from `~/certs/proxmox` and uploads them to the nodes in the
+    next step.
+
+1.  Create the directory and go into it.
+
+    ```sh
+    mkdir -p ~/certs/proxmox && cd ~/certs/proxmox
+    ```
+
+2.  Copy the CA certificate from the ansible repository.
+
+    ```sh
+    cp ~/git-repositories/infrastructure/ansible/roles/ca_trust/files/stamx-ca-certificate.crt ca.crt
+    ```
+
+3.  Create a private key and a certificate request for every node.
+
+    === "pve-a"
+
+        ```sh
+        openssl req -new -newkey rsa:4096 -nodes -keyout pve-a.key -out pve-a.csr \
+          -subj "/O=stamx/CN=pve-a.lan.stamx.nl" \
+          -addext "subjectAltName=DNS:pve-a.lan.stamx.nl,DNS:pve-a,IP:10.0.99.2" \
+          -addext "basicConstraints=CA:FALSE" \
+          -addext "keyUsage=critical,digitalSignature,keyEncipherment" \
+          -addext "extendedKeyUsage=serverAuth"
+        ```
+
+    === "pve-b"
+
+        ```sh
+        openssl req -new -newkey rsa:4096 -nodes -keyout pve-b.key -out pve-b.csr \
+          -subj "/O=stamx/CN=pve-b.lan.stamx.nl" \
+          -addext "subjectAltName=DNS:pve-b.lan.stamx.nl,DNS:pve-b,IP:10.0.99.3" \
+          -addext "basicConstraints=CA:FALSE" \
+          -addext "keyUsage=critical,digitalSignature,keyEncipherment" \
+          -addext "extendedKeyUsage=serverAuth"
+        ```
+
+4.  Sign the requests with the CA. Replace `/path/to/stamx-ca-private.key`
+    with the location of the CA private key.
+
+    === "pve-a"
+
+        ```sh
+        openssl x509 -req -in pve-a.csr -CA ca.crt -CAkey /path/to/stamx-ca-private.key \
+          -CAcreateserial -copy_extensions copyall -days 825 -sha256 -out pve-a.crt
+        ```
+
+    === "pve-b"
+
+        ```sh
+        openssl x509 -req -in pve-b.csr -CA ca.crt -CAkey /path/to/stamx-ca-private.key \
+          -CAcreateserial -copy_extensions copyall -days 825 -sha256 -out pve-b.crt
+        ```
+
+5.  Check the certificates. Both must report `OK`.
+
+    ```sh
+    openssl verify -CAfile ca.crt pve-a.crt pve-b.crt
+    ```
+
+6.  Remove the requests and protect the private keys.
+
+    ```sh
+    rm pve-a.csr pve-b.csr && chmod 600 pve-a.key pve-b.key
+    ```
+
+!!! note
+
+    The certificates are valid for 825 days. To renew them, repeat this step
+    and run `tofu apply`.
+
+### 6. Apply OpenTofu
+
+Apply the `proxmox` stack, see [OpenTofu usage](infrastructure-as-code.md#usage).
 
 This configures the APT repositories (enterprise off, no-subscription on), DNS,
-the time zone, the bridges `vmbr1` (wan) and `vmbr2` (lan), the `vm-storage`
-storage and the cluster options. The installer only creates `vmbr0`.
+`/etc/hosts`, the time zone, the bridges `vmbr1` (wan) and `vmbr2` (lan), the
+SDN VLANs, the `vm-storage` storage, the `lsi-hba` PCI mapping, the pools, the
+node certificates and the cluster options. The installer only creates `vmbr0`.
 
 The state in git still knows the resources from before the reinstall, so
 OpenTofu only creates what is missing.
 
-### 6. Finish each node
+!!! warning "Reinstalling the whole cluster"
+
+    HA, storage replication and pool membership refer to guests. After a
+    reinstall of both nodes those guests do not exist yet, so leave them out
+    of the first apply:
+
+    ```sh
+    tofu apply \
+      -exclude=proxmox_haresource.opnsense \
+      -exclude=proxmox_replication.guest \
+      -exclude=proxmox_pool_membership.guest
+    ```
+
+    Run a plain `tofu apply` once the guests are back. Reinstalling a single
+    node does not need this, because the guests keep running on the other
+    node.
+
+### 7. Finish each node
 
 1.  Update the system. This needs the no-subscription repository from the
     previous step.
@@ -281,8 +371,15 @@ OpenTofu only creates what is missing.
 
 ### Make a VM HA
 
-1. Turn on Replication for the VM that you want to make High Available.
-2. Go to `Datacenter` -> `HA` and add a Resource.
+HA and storage replication are managed by OpenTofu in
+`opentofu/stacks/proxmox/ha.tf`. Changes made in the web interface are not in
+the code and get lost on a reinstall.
+
+1.  Add the guest to `replicated_guests` in `locals.tf`, so its disks are
+    replicated to `pve-b` every 15 minutes.
+2.  Add a `proxmox_haresource` for the guest to `ha.tf`, and add it to the
+    `resources` of a HA rule if it should prefer a node.
+3.  [Apply OpenTofu](infrastructure-as-code.md#usage).
 
 ### Mount USB stick (backups)
 
