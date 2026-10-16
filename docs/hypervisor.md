@@ -1,188 +1,161 @@
 ## Install Proxmox
 
-Enter the following values during setup.
+These steps (re)install one node or the whole cluster. Everything the Proxmox
+API can configure is managed by OpenTofu in the
+[infrastructure](https://github.com/x-real-ip/infrastructure/tree/main/opentofu)
+repository. The steps below are the manual work before and after `tofu apply`.
 
-1. Install Proxmox with default Partitioning.
-2. Hostname `pve-b` or `pve-a`
-3. Domain `lan.stamx.nl`
+### 1. Installer
 
-## Disks and partitioning
+Use the graphical installer and enter the following values.
 
-1. Remove local-lvm via the proxmox UI.
-2. Remove the data partition.
+=== "pve-a"
 
-   ```sh
-   lvremove pve/data
-   ```
+    | Setting                 | Value                                   |
+    | ----------------------- | --------------------------------------- |
+    | Target disk             | `Force MP500` (112 GB NVMe)             |
+    | Filesystem              | `ext4`                                  |
+    | Advanced LVM options    | `swapsize` = `8`, `maxvz` = `0`         |
+    | Hostname (FQDN)         | `pve-a.lan.stamx.nl`                    |
+    | Management interface    | Onboard NIC                             |
+    | Pin interface names     | Enabled (`nic0`, `nic1`, `nic2`)        |
+    | IP address (CIDR)       | `10.0.99.2/24`                          |
+    | Gateway                 | `10.0.99.1`                             |
+    | DNS server              | `10.0.99.1`                             |
 
-3. Extend the root logical volume and resize.
+=== "pve-b"
 
-   ```sh
-   lvextend -l +100%FREE /dev/pve/root
-   ```
+    | Setting                 | Value                                   |
+    | ----------------------- | --------------------------------------- |
+    | Target disk             | `KINGSTON SUV400S37240G` (240 GB SATA)  |
+    | Filesystem              | `ext4`                                  |
+    | Advanced LVM options    | `swapsize` = `8`, `maxvz` = `0`         |
+    | Hostname (FQDN)         | `pve-b.lan.stamx.nl`                    |
+    | Management interface    | Onboard NIC                             |
+    | Pin interface names     | Enabled (`nic0`, `nic1`, `nic2`)        |
+    | IP address (CIDR)       | `10.0.99.3/24`                          |
+    | Gateway                 | `10.0.99.1`                             |
+    | DNS server              | `10.0.99.1`                             |
 
-   ```sh
-   resize2fs /dev/pve/root
-   ```
+!!! warning
 
-4. Update the system.
+    Only select the boot disk. The other NVMe holds the `vm-storage` ZFS pool
+    with the VM disks and must not be touched by the installer.
 
-   ```sh
-   update-initramfs -u
-   ```
+!!! note
 
-## Network
+    `maxvz = 0` skips the data volume, so there is no `local-lvm` storage to
+    remove afterwards. VM disks live on `vm-storage`.
 
-1.  Backup default network interfaces file
+!!! note
 
-    ```sh
-    cp /etc/network/interfaces /etc/network/interfaces.bak
-    ```
+    The OpenTofu stack expects the interface names `nic0` (onboard), `nic1` and
+    `nic2` (PCI card). If the installer does not offer interface pinning, run
+    `pve-network-interface-pinning generate` after the installation and reboot.
 
-2.  Change network settings
+### 2. Prepare each node
 
-    ```sh
-    nano /etc/network/interfaces
-    ```
-
-3.  Paste the following content into the interfaces file for each specific
-    Proxmox hypervisor
-
-    === "pve-a"
-
-        ```
-        auto lo
-        iface lo inet loopback
-
-        auto nic0
-        iface nic0 inet manual
-            up /sbin/ethtool -s nic0 wol g
-        #Onboard
-
-        iface nic1 inet manual
-        #PCI
-
-        iface nic2 inet manual
-        #PCI
-
-        auto vmbr0
-        iface vmbr0 inet static
-                address 10.0.99.2/24
-                gateway 10.0.99.1
-                bridge-ports nic0
-                bridge-stp off
-                bridge-fd 0
-        #mgmt
-
-        auto vmbr1
-        iface vmbr1 inet manual
-                bridge-ports nic1
-                bridge-stp off
-                bridge-fd 0
-                bridge-vlan-aware yes
-                bridge-vids 2-4094
-        #wan
-
-        auto vmbr2
-        iface vmbr2 inet manual
-                bridge-ports nic2
-                bridge-stp off
-                bridge-fd 0
-                bridge-vlan-aware yes
-                bridge-vids 2-4094
-        #lan
-
-
-        source /etc/network/interfaces.d/*
-        ```
-
-    === "pve-b"
-
-        ```
-        auto lo
-        iface lo inet loopback
-
-        auto nic0
-        iface nic0 inet manual
-            up /sbin/ethtool -s nic0 wol g
-        #Onboard
-
-        iface nic1 inet manual
-        #PCI
-
-        iface nic2 inet manual
-        #PCI
-
-        auto vmbr0
-        iface vmbr0 inet static
-                address 10.0.99.3/24
-                gateway 10.0.99.1
-                bridge-ports nic0
-                bridge-stp off
-                bridge-fd 0
-        #mgmt
-
-        auto vmbr1
-        iface vmbr1 inet manual
-                bridge-ports nic1
-                bridge-stp off
-                bridge-fd 0
-                bridge-vlan-aware yes
-                bridge-vids 2-4094
-        #wan
-
-        auto vmbr2
-        iface vmbr2 inet manual
-                bridge-ports nic2
-                bridge-stp off
-                bridge-fd 0
-                bridge-vlan-aware yes
-                bridge-vids 2-4094
-        #lan
-
-        source /etc/network/interfaces.d/*
-        ```
-
-4.  Reboot
+1.  Add the Ansible SSH key. Run this from the desktop.
 
     ```sh
-    reboot now
+    ssh-copy-id -i ~/.ssh/ansible.pub root@10.0.99.2
     ```
 
-## Import ZFS pool
-
-1.  List zfs pools and check if vm-storage pool exist.
+2.  Extend the root logical volume over the free space. The installer caps root
+    at 96 GiB and leaves some space unallocated.
 
     ```sh
-    zpool import
+    lvextend -r -l +100%FREE pve/root
     ```
 
-2.  Import zfs pool
+3.  Import the existing ZFS pool. Never create it, it holds the VM disks.
 
     ```sh
     zpool import -f vm-storage
     ```
 
-3.  Reboot
+### 3. Create the cluster
+
+1.  Create the cluster on `pve-a`.
 
     ```sh
-    reboot now
+    pvecm create pve-cluster
     ```
 
-4.  Add pool to the UI.  
-    Go to `Datacenter` -> `Storage` -> `Add` -> `ZFS` -> Select `vm-storage` and
-    enter id `vm-storage`
+2.  Join `pve-b`. This asks for the root password of `pve-a`.
 
-## Post install scripts
+    ```sh
+    pvecm add 10.0.99.2
+    ```
 
-The scripts can be found at <https://community-scripts.github.io/ProxmoxVE/>
+!!! note "Reinstalling a single node"
 
-- Run the 'Proxmox VE CPU Scaling Governor' script and set it to `powersaving`  
-   <https://community-scripts.github.io/ProxmoxVE/scripts?id=scaling-governor>
-- Run the 'Proxmox VE Post Install' script  
-   <https://community-scripts.github.io/ProxmoxVE/scripts?id=post-pve-install>
-- Run the 'Proxmox VE Kernel Clean' script to clean up old kernels  
-   <https://community-scripts.github.io/ProxmoxVE/scripts?id=kernel-clean>
+    The remaining node still knows the reinstalled node. Remove it there before
+    joining, for example for `pve-b`:
+
+    ``` sh
+    pvecm delnode pve-b
+    rm -r /etc/pve/nodes/pve-b
+    ```
+
+### 4. Create the OpenTofu API token
+
+Run this on `pve-a` and store `tofu@pve!provider=<value>` in Bitwarden. The
+value is shown only once.
+
+```sh
+pveum user add tofu@pve --comment "OpenTofu"
+pveum aclmod / -user tofu@pve -role Administrator
+pveum user token add tofu@pve provider --privsep 0
+```
+
+### 5. Apply OpenTofu
+
+Run this from the `opentofu/stacks/proxmox` directory of the infrastructure
+repository.
+
+```sh
+export TF_VAR_state_passphrase='...'
+export PROXMOX_VE_API_TOKEN='tofu@pve!provider=...'
+
+tofu init
+tofu plan
+tofu apply
+```
+
+This configures the APT repositories (enterprise off, no-subscription on), DNS,
+the time zone, the bridges `vmbr1` (wan) and `vmbr2` (lan), the `vm-storage`
+storage and the cluster options. The installer only creates `vmbr0`.
+
+The state in git still knows the resources from before the reinstall, so
+OpenTofu only creates what is missing.
+
+### 6. Finish each node
+
+1.  Update the system. This needs the no-subscription repository from the
+    previous step.
+
+    ```sh
+    apt update && apt dist-upgrade -y
+    ```
+
+2.  Enable Wake-on-LAN on the onboard NIC. Add the `up` line to the `nic0`
+    stanza in `/etc/network/interfaces`.
+
+    ```txt { .no-copy }
+    auto nic0
+    iface nic0 inet manual
+        up /sbin/ethtool -s nic0 wol g
+    ```
+
+3.  Run the
+    ['Proxmox VE CPU Scaling Governor'](https://community-scripts.github.io/ProxmoxVE/scripts?id=scaling-governor)
+    script and set it to `powersave`.
+
+4.  [Add the QDevice](#add-qdevice).
+
+5.  Set up two-factor authentication for `root` via `Datacenter` ->
+    `Permissions` -> `Two Factor`.
 
 ## High Availability
 
