@@ -21,12 +21,11 @@
     pipx install ansible-core
     ```
 
-4. Clone the infrastructure repository
+4. Clone the infrastructure repository and go into the `ansible` directory
    ``` bash
     git clone https://github.com/x-real-ip/infrastructure.git
+    cd infrastructure/ansible
    ```
-
-5. Navigate to the `ansible` directory
 
 5. Install collections from the requirements.yaml located in the Ansible dir (optional)
 
@@ -46,7 +45,7 @@
 
 ### Playbooks
 
-Navigate to the `ansible` directory where the [infrastructure](https://github.com/x-real-ip/infrastructure.git) repository is cloned.
+Run the playbooks from the `ansible` directory of the [infrastructure](https://github.com/x-real-ip/infrastructure) repository.
 
 | Playbook | Command | Comment |
 | ------------------ | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -68,3 +67,57 @@ Navigate to the `ansible` directory where the [infrastructure](https://github.co
 | truenas_shares | `ansible-playbook playbooks/truenas_shares.yaml` | Configure all NFS and ISCSI shares on the truenas hosts |
 | truenas_switch-master | `ansible-playbook --ask-vault-password playbooks/truenas_switch-master.yaml` | Switch the master from A to B or the otherway around |
 | truenas_snapshot-tasks | `ansible-playbook --ask-vault-password playbooks/truenas_snapshot-tasks.yaml` | Apply desired snapshots tasks to the truenas server |
+
+## OpenTofu
+
+The configuration of the infrastructure itself lives in the `opentofu`
+directory of the [infrastructure](https://github.com/x-real-ip/infrastructure)
+repository. Every directory under `opentofu/stacks` has its own state and is
+planned and applied on its own.
+
+| Stack | Manages |
+| ----- | ------- |
+| `proxmox` | Proxmox cluster, see [Hypervisor](hypervisor.md#install-proxmox) |
+
+### Installation
+
+The [desktop playbook](#playbooks) installs OpenTofu from its APT repository
+and adds the stamx CA to the trust store.
+
+### Secrets
+
+Both are stored in Bitwarden and only ever passed as environment variables.
+
+| Environment variable | Contents |
+| -------------------- | -------- |
+| `TF_VAR_state_passphrase` | Passphrase that encrypts the state in git, at least 16 characters. Without it the state cannot be read. |
+| `PROXMOX_VE_API_TOKEN` | `tofu@pve!provider=<value>`, see [Create the OpenTofu API token](hypervisor.md#4-create-the-opentofu-api-token). |
+
+### Usage
+
+1.  Go to the stack and export the secrets. Use single quotes, because the
+    token contains a `!`. A leading space keeps the line out of the shell
+    history.
+
+    ```sh
+    cd opentofu/stacks/proxmox
+     export TF_VAR_state_passphrase='...'
+     export PROXMOX_VE_API_TOKEN='tofu@pve!provider=...'
+    ```
+
+2.  Review the plan and apply it.
+
+    ```sh
+    tofu init
+    tofu plan
+    tofu apply
+    ```
+
+3.  Commit the updated `terraform.tfstate`. It is encrypted.
+
+### Adopt existing resources
+
+To bring something that already exists under OpenTofu, add a temporary
+`imports.tf` with an `import` block for it. The plan must report only imports
+and no changes; if it shows a change, align the code with reality first.
+Remove `imports.tf` after the apply.
