@@ -100,14 +100,21 @@ Use the graphical installer and enter the following values.
 
 ### 4. Create the OpenTofu API token
 
-Run this on `pve-a` and store `tofu@pve!provider=<value>` in Bitwarden. The
-value is shown only once.
+Run this once on any cluster node, for example over SSH from the desktop, and
+store `tofu@pve!provider=<value>` in Bitwarden. The value is shown only once.
 
 ```sh
-pveum user add tofu@pve --comment "OpenTofu"
-pveum aclmod / -user tofu@pve -role Administrator
-pveum user token add tofu@pve provider --privsep 0
+ssh root@10.0.99.2 'pveum user add tofu@pve --comment "OpenTofu" \
+  && pveum aclmod / -user tofu@pve -role Administrator \
+  && pveum user token add tofu@pve provider --privsep 0'
 ```
+
+!!! note
+
+    Users, ACLs and tokens live in `/etc/pve`, which is replicated to every
+    node in the cluster, so running this once is enough. Do it after creating
+    the cluster: a joining node replaces its `/etc/pve` with the one from the
+    cluster.
 
 ### 5. Apply OpenTofu
 
