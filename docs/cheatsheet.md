@@ -260,6 +260,27 @@ kubectl cp <namespace>/<pod>:/tmp/foo /tmp/bar
 argocd admin dashboard -n argocd
 ```
 
+## ArgoCD login
+
+No SSO is configured, so log in with the built-in `admin` user.
+
+Get the initial password:
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+# or
+argocd admin initial-password -n argocd
+```
+
+- Web UI: <https://argocd.lan.stamx.nl> (user `admin`)
+- CLI: `argocd login argocd.lan.stamx.nl --username admin --grpc-web`
+  (`--grpc-web` is needed because traffic goes through the Gateway/HTTPRoute with `server.insecure: "true"`)
+
+After the first login:
+
+1. Change the password: `argocd account update-password`
+2. Delete the initial secret: `kubectl -n argocd delete secret argocd-initial-admin-secret`
+
 ## Uptime Kuma
 
 A sqlite query to find and replace a part in the monitor url.
